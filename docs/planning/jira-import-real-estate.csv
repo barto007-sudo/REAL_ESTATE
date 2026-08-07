@@ -1,0 +1,31 @@
+Issue Type,Summary,Description,Priority,Labels,Epic Name,Epic Link,Story Points
+Epic,RE-01 Plataforma Base y UX Shell,"Layout maestro SPA con sidebar, header, navegacion y responsive.",Highest,"real-estate,mvp,frontend",RE-01 Plataforma Base y UX Shell,,
+Story,RE-01.01 Layout maestro SPA,"Implementar sidebar persistente, header superior, area de contenido dinamica y rutas sin recarga.",Highest,"real-estate,mvp,frontend",,RE-01 Plataforma Base y UX Shell,5
+Story,RE-01.02 Design system base,"Crear tokens visuales, componentes base (card, table, badge, modal, dropdown, pagination) y estados UI.",High,"real-estate,frontend,design-system",,RE-01 Plataforma Base y UX Shell,5
+Epic,RE-02 Seguridad Auth y RBAC,"Autenticacion, autorizacion por rol y hardening minimo para produccion.",Highest,"real-estate,mvp,backend,security",RE-02 Seguridad Auth y RBAC,,
+Story,RE-02.01 Login JWT + refresh,"Crear login, refresh, logout y endpoint /auth/me con expiracion y rotacion de tokens.",Highest,"real-estate,backend,security",,RE-02 Seguridad Auth y RBAC,8
+Story,RE-02.02 RBAC por rol,"Aplicar permisos para Admin, Manager y Agent en endpoints y UI.",Highest,"real-estate,backend,frontend,security",,RE-02 Seguridad Auth y RBAC,8
+Story,RE-02.03 Hardening HTTP,"Configurar CORS allowlist, security headers y rate limiting en auth/endpoints sensibles.",Highest,"real-estate,backend,security,devops",,RE-02 Seguridad Auth y RBAC,5
+Epic,RE-03 Dashboard Ejecutivo,"KPIs, tabla operativa, timeline de actividad y graficos analiticos.",Highest,"real-estate,mvp,frontend,analytics",RE-03 Dashboard Ejecutivo,,
+Story,RE-03.01 KPI cards,"Total Properties, Active Contracts, Pending Payments y Tenant Retention.",High,"real-estate,frontend,analytics",,RE-03 Dashboard Ejecutivo,3
+Story,RE-03.02 Property List operativa,"Tabla paginada con preview, nombre, direccion, tipo, estado y acciones.",High,"real-estate,frontend",,RE-03 Dashboard Ejecutivo,5
+Story,RE-03.03 Activity + charts,"Recent Activity con Show More, donut de ocupacion y barras de ingresos/gastos.",High,"real-estate,frontend,analytics",,RE-03 Dashboard Ejecutivo,5
+Epic,RE-04 Properties,"CRUD de propiedades con filtros, paginacion y media.",Highest,"real-estate,mvp,backend,frontend",RE-04 Properties,,
+Story,RE-04.01 CRUD propiedades,"Crear, listar, detalle, actualizar y eliminar propiedades con validacion.",Highest,"real-estate,backend,frontend",,RE-04 Properties,8
+Story,RE-04.02 Busqueda y filtros,"Busqueda global y filtros por ciudad, estado, tipo y disponibilidad.",High,"real-estate,backend,frontend",,RE-04 Properties,5
+Epic,RE-05 Contracts,"Gestion del ciclo de vida de contratos de renta/venta.",Highest,"real-estate,mvp,backend,frontend",RE-05 Contracts,,
+Story,RE-05.01 CRUD contratos,"Alta, consulta, actualizacion y cancelacion de contratos con estados.",Highest,"real-estate,backend,frontend",,RE-05 Contracts,8
+Story,RE-05.02 Renovaciones y vencimientos,"Renovar contratos y alertas 30/60/90 dias.",High,"real-estate,backend,frontend",,RE-05 Contracts,5
+Epic,RE-06 CRM Tenants y Owners,"Perfiles completos de inquilinos y propietarios.",High,"real-estate,mvp,backend,frontend",RE-06 CRM Tenants y Owners,,
+Story,RE-06.01 CRUD tenants,"Gestion de perfil, contacto e historial contractual.",High,"real-estate,backend,frontend",,RE-06 CRM Tenants y Owners,5
+Story,RE-06.02 CRUD owners,"Gestion de propietario y portafolio agregado.",High,"real-estate,backend,frontend",,RE-06 CRM Tenants y Owners,5
+Epic,RE-07 Payments y Finanzas,"Registro de pagos, conciliacion, vencidos y aging.",Highest,"real-estate,mvp,backend,frontend,finance",RE-07 Payments y Finanzas,,
+Story,RE-07.01 Registro y conciliacion de pagos,"Registrar pagos y actualizar estado de deuda por contrato.",Highest,"real-estate,backend,frontend,finance",,RE-07 Payments y Finanzas,8
+Story,RE-07.02 Aging de cartera,"Buckets 0-30, 31-60, 61+ y totales por periodo.",High,"real-estate,backend,frontend,finance",,RE-07 Payments y Finanzas,5
+Epic,RE-08 Reports,"Reportes operativos y ejecutivos exportables.",High,"real-estate,mvp,backend,frontend,analytics",RE-08 Reports,,
+Story,RE-08.01 Reportes clave,"Occupancy, Income vs Expenses y Contracts Expiring con filtros de fecha.",High,"real-estate,backend,frontend,analytics",,RE-08 Reports,5
+Story,RE-08.02 Export CSV,"Descarga de reportes en CSV para operacion.",Medium,"real-estate,backend,frontend",,RE-08 Reports,3
+Epic,RE-09 DevOps Calidad y Observabilidad,"Pipeline, pruebas, despliegue y monitoreo.",Highest,"real-estate,mvp,devops,qa",RE-09 DevOps Calidad y Observabilidad,,
+Story,RE-09.01 CI quality gates,"Pipeline con install, lint, typecheck, test y build en PR.",Highest,"real-estate,devops,qa",,RE-09 DevOps Calidad y Observabilidad,5
+Story,RE-09.02 CD staging y produccion,"Deploy a staging automatico y produccion con aprobacion manual.",High,"real-estate,devops",,RE-09 DevOps Calidad y Observabilidad,5
+Story,RE-09.03 Smoke tests E2E,"Automatizar smoke de login, CRUD property, contratos/pagos y dashboard.",Highest,"real-estate,qa,automation",,RE-09 DevOps Calidad y Observabilidad,8

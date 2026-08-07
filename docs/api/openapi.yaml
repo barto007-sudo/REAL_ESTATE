@@ -1,0 +1,886 @@
+openapi: 3.0.3
+info:
+  title: REAL_ESTATE API
+  version: 1.0.0
+  description: API para gestion inmobiliaria empresarial
+servers:
+  - url: https://api.realestate.com/api/v1
+    description: Production
+  - url: https://staging-api.realestate.com/api/v1
+    description: Staging
+tags:
+  - name: Auth
+  - name: Dashboard
+  - name: Properties
+  - name: Contracts
+  - name: Tenants
+  - name: Owners
+  - name: Payments
+  - name: Reports
+security:
+  - bearerAuth: []
+paths:
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: Login de usuario
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login exitoso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Credenciales invalidas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: Renueva access token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RefreshRequest'
+      responses:
+        '200':
+          description: Token renovado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+  /auth/logout:
+    post:
+      tags: [Auth]
+      summary: Cierra sesion
+      responses:
+        '204':
+          description: Logout exitoso
+  /auth/me:
+    get:
+      tags: [Auth]
+      summary: Usuario autenticado
+      responses:
+        '200':
+          description: Perfil de usuario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+
+  /dashboard/overview:
+    get:
+      tags: [Dashboard]
+      summary: KPIs y bloques del dashboard
+      responses:
+        '200':
+          description: Datos de dashboard
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardOverview'
+
+  /properties:
+    get:
+      tags: [Properties]
+      summary: Lista paginada de propiedades
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Search'
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [Occupied, Vacant, Maintenance, ForRent, ForSale]
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [ForRent, ForSale, Vacant]
+      responses:
+        '200':
+          description: Lista de propiedades
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPropertyResponse'
+    post:
+      tags: [Properties]
+      summary: Crear propiedad
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PropertyCreateRequest'
+      responses:
+        '201':
+          description: Propiedad creada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Property'
+  /properties/{id}:
+    get:
+      tags: [Properties]
+      summary: Detalle de propiedad
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Propiedad
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Property'
+        '404':
+          description: No encontrada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    patch:
+      tags: [Properties]
+      summary: Actualiza propiedad
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PropertyUpdateRequest'
+      responses:
+        '200':
+          description: Propiedad actualizada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Property'
+    delete:
+      tags: [Properties]
+      summary: Elimina propiedad
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          description: Eliminada
+
+  /contracts:
+    get:
+      tags: [Contracts]
+      summary: Lista paginada de contratos
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [Draft, Active, Expiring, Expired, Terminated]
+      responses:
+        '200':
+          description: Lista de contratos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedContractResponse'
+    post:
+      tags: [Contracts]
+      summary: Crea contrato
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractCreateRequest'
+      responses:
+        '201':
+          description: Contrato creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+  /contracts/{id}:
+    get:
+      tags: [Contracts]
+      summary: Detalle de contrato
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Contrato
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+    patch:
+      tags: [Contracts]
+      summary: Actualiza contrato
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractUpdateRequest'
+      responses:
+        '200':
+          description: Contrato actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+    delete:
+      tags: [Contracts]
+      summary: Cancela contrato
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          description: Contrato cancelado
+  /contracts/{id}/renew:
+    post:
+      tags: [Contracts]
+      summary: Renueva contrato
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractRenewRequest'
+      responses:
+        '200':
+          description: Contrato renovado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contract'
+
+  /tenants:
+    get:
+      tags: [Tenants]
+      summary: Lista paginada de inquilinos
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Search'
+      responses:
+        '200':
+          description: Lista de inquilinos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTenantResponse'
+    post:
+      tags: [Tenants]
+      summary: Crea inquilino
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantCreateRequest'
+      responses:
+        '201':
+          description: Inquilino creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+  /tenants/{id}:
+    get:
+      tags: [Tenants]
+      summary: Detalle de inquilino
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Inquilino
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+    patch:
+      tags: [Tenants]
+      summary: Actualiza inquilino
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TenantUpdateRequest'
+      responses:
+        '200':
+          description: Inquilino actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tenant'
+    delete:
+      tags: [Tenants]
+      summary: Baja logica de inquilino
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          description: Inquilino desactivado
+
+  /owners:
+    get:
+      tags: [Owners]
+      summary: Lista paginada de propietarios
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - $ref: '#/components/parameters/Search'
+      responses:
+        '200':
+          description: Lista de propietarios
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedOwnerResponse'
+    post:
+      tags: [Owners]
+      summary: Crea propietario
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OwnerCreateRequest'
+      responses:
+        '201':
+          description: Propietario creado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Owner'
+  /owners/{id}:
+    get:
+      tags: [Owners]
+      summary: Detalle de propietario
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '200':
+          description: Propietario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Owner'
+    patch:
+      tags: [Owners]
+      summary: Actualiza propietario
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OwnerUpdateRequest'
+      responses:
+        '200':
+          description: Propietario actualizado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Owner'
+    delete:
+      tags: [Owners]
+      summary: Baja logica de propietario
+      parameters:
+        - $ref: '#/components/parameters/Id'
+      responses:
+        '204':
+          description: Propietario desactivado
+
+  /payments:
+    get:
+      tags: [Payments]
+      summary: Lista paginada de pagos
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/PageSize'
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [Pending, Paid, Overdue, Cancelled]
+      responses:
+        '200':
+          description: Lista de pagos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPaymentResponse'
+    post:
+      tags: [Payments]
+      summary: Registra pago
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentCreateRequest'
+      responses:
+        '201':
+          description: Pago registrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+
+  /reports/occupancy:
+    get:
+      tags: [Reports]
+      summary: Reporte de ocupacion
+      parameters:
+        - $ref: '#/components/parameters/DateFrom'
+        - $ref: '#/components/parameters/DateTo'
+      responses:
+        '200':
+          description: Serie ocupacion
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OccupancyReport'
+  /reports/income-expenses:
+    get:
+      tags: [Reports]
+      summary: Reporte mensual de ingresos y gastos
+      parameters:
+        - $ref: '#/components/parameters/DateFrom'
+        - $ref: '#/components/parameters/DateTo'
+      responses:
+        '200':
+          description: Serie ingresos y gastos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IncomeExpenseReport'
+  /reports/contracts-expiring:
+    get:
+      tags: [Reports]
+      summary: Contratos por vencer
+      parameters:
+        - in: query
+          name: windowDays
+          schema:
+            type: integer
+            enum: [30, 60, 90]
+            default: 30
+      responses:
+        '200':
+          description: Contratos por vencer
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Contract'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    Id:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        format: uuid
+    Page:
+      in: query
+      name: page
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PageSize:
+      in: query
+      name: pageSize
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+    Search:
+      in: query
+      name: search
+      schema:
+        type: string
+    DateFrom:
+      in: query
+      name: dateFrom
+      schema:
+        type: string
+        format: date
+    DateTo:
+      in: query
+      name: dateTo
+      schema:
+        type: string
+        format: date
+
+  schemas:
+    ErrorResponse:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          example: Invalid request payload
+        details:
+          type: array
+          items:
+            type: object
+
+    PaginationMeta:
+      type: object
+      properties:
+        page: { type: integer }
+        pageSize: { type: integer }
+        total: { type: integer }
+        totalPages: { type: integer }
+
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email: { type: string, format: email }
+        password: { type: string, minLength: 8 }
+
+    RefreshRequest:
+      type: object
+      required: [refreshToken]
+      properties:
+        refreshToken: { type: string }
+
+    AuthResponse:
+      type: object
+      required: [accessToken, refreshToken, user]
+      properties:
+        accessToken: { type: string }
+        refreshToken: { type: string }
+        user:
+          $ref: '#/components/schemas/User'
+
+    User:
+      type: object
+      required: [id, fullName, email, role, isActive]
+      properties:
+        id: { type: string, format: uuid }
+        fullName: { type: string }
+        email: { type: string, format: email }
+        role:
+          type: string
+          enum: [Admin, Manager, Agent]
+        isActive: { type: boolean }
+
+    Property:
+      type: object
+      required: [id, name, address, city, type, status, ownerId]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        address: { type: string }
+        city: { type: string }
+        state: { type: string }
+        zipCode: { type: string }
+        type:
+          type: string
+          enum: [ForRent, ForSale, Vacant]
+        status:
+          type: string
+          enum: [Occupied, Vacant, Maintenance, ForRent, ForSale]
+        ownerId: { type: string, format: uuid }
+        rentAmount: { type: number, format: double, nullable: true }
+        salePrice: { type: number, format: double, nullable: true }
+        imageUrl: { type: string, format: uri, nullable: true }
+
+    PropertyCreateRequest:
+      type: object
+      required: [name, address, city, type, status, ownerId]
+      properties:
+        name: { type: string }
+        address: { type: string }
+        city: { type: string }
+        state: { type: string }
+        zipCode: { type: string }
+        type: { type: string, enum: [ForRent, ForSale, Vacant] }
+        status: { type: string, enum: [Occupied, Vacant, Maintenance, ForRent, ForSale] }
+        ownerId: { type: string, format: uuid }
+        rentAmount: { type: number, format: double }
+        salePrice: { type: number, format: double }
+        imageUrl: { type: string, format: uri }
+
+    PropertyUpdateRequest:
+      type: object
+      properties:
+        name: { type: string }
+        address: { type: string }
+        city: { type: string }
+        state: { type: string }
+        zipCode: { type: string }
+        type: { type: string, enum: [ForRent, ForSale, Vacant] }
+        status: { type: string, enum: [Occupied, Vacant, Maintenance, ForRent, ForSale] }
+        ownerId: { type: string, format: uuid }
+        rentAmount: { type: number, format: double }
+        salePrice: { type: number, format: double }
+        imageUrl: { type: string, format: uri }
+
+    Contract:
+      type: object
+      required: [id, propertyId, ownerId, tenantId, contractType, startDate, endDate, amount, status]
+      properties:
+        id: { type: string, format: uuid }
+        propertyId: { type: string, format: uuid }
+        ownerId: { type: string, format: uuid }
+        tenantId: { type: string, format: uuid }
+        contractType: { type: string, enum: [Lease, Sale] }
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+        amount: { type: number, format: double }
+        deposit: { type: number, format: double, nullable: true }
+        status: { type: string, enum: [Draft, Active, Expiring, Expired, Terminated] }
+
+    ContractCreateRequest:
+      type: object
+      required: [propertyId, ownerId, tenantId, contractType, startDate, endDate, amount]
+      properties:
+        propertyId: { type: string, format: uuid }
+        ownerId: { type: string, format: uuid }
+        tenantId: { type: string, format: uuid }
+        contractType: { type: string, enum: [Lease, Sale] }
+        startDate: { type: string, format: date }
+        endDate: { type: string, format: date }
+        amount: { type: number, format: double }
+        deposit: { type: number, format: double }
+
+    ContractUpdateRequest:
+      type: object
+      properties:
+        endDate: { type: string, format: date }
+        amount: { type: number, format: double }
+        deposit: { type: number, format: double }
+        status: { type: string, enum: [Draft, Active, Expiring, Expired, Terminated] }
+
+    ContractRenewRequest:
+      type: object
+      required: [newStartDate, newEndDate, amount]
+      properties:
+        newStartDate: { type: string, format: date }
+        newEndDate: { type: string, format: date }
+        amount: { type: number, format: double }
+
+    Tenant:
+      type: object
+      required: [id, fullName, email, phone, status]
+      properties:
+        id: { type: string, format: uuid }
+        fullName: { type: string }
+        email: { type: string, format: email }
+        phone: { type: string }
+        status: { type: string, enum: [Active, Inactive] }
+
+    TenantCreateRequest:
+      type: object
+      required: [fullName, email, phone]
+      properties:
+        fullName: { type: string }
+        email: { type: string, format: email }
+        phone: { type: string }
+
+    TenantUpdateRequest:
+      type: object
+      properties:
+        fullName: { type: string }
+        email: { type: string, format: email }
+        phone: { type: string }
+        status: { type: string, enum: [Active, Inactive] }
+
+    Owner:
+      type: object
+      required: [id, fullName, email, phone, status]
+      properties:
+        id: { type: string, format: uuid }
+        fullName: { type: string }
+        email: { type: string, format: email }
+        phone: { type: string }
+        status: { type: string, enum: [Active, Inactive] }
+
+    OwnerCreateRequest:
+      type: object
+      required: [fullName, email, phone]
+      properties:
+        fullName: { type: string }
+        email: { type: string, format: email }
+        phone: { type: string }
+
+    OwnerUpdateRequest:
+      type: object
+      properties:
+        fullName: { type: string }
+        email: { type: string, format: email }
+        phone: { type: string }
+        status: { type: string, enum: [Active, Inactive] }
+
+    Payment:
+      type: object
+      required: [id, contractId, dueDate, amount, status, method]
+      properties:
+        id: { type: string, format: uuid }
+        contractId: { type: string, format: uuid }
+        dueDate: { type: string, format: date }
+        paidDate: { type: string, format: date, nullable: true }
+        amount: { type: number, format: double }
+        fee: { type: number, format: double, nullable: true }
+        status: { type: string, enum: [Pending, Paid, Overdue, Cancelled] }
+        method: { type: string, enum: [Transfer, Card, Cash, Check] }
+        reference: { type: string, nullable: true }
+
+    PaymentCreateRequest:
+      type: object
+      required: [contractId, dueDate, amount, method]
+      properties:
+        contractId: { type: string, format: uuid }
+        dueDate: { type: string, format: date }
+        amount: { type: number, format: double }
+        method: { type: string, enum: [Transfer, Card, Cash, Check] }
+        reference: { type: string }
+
+    ActivityItem:
+      type: object
+      properties:
+        timestamp: { type: string, format: date-time }
+        actorName: { type: string }
+        action: { type: string }
+        entityType: { type: string }
+        entityName: { type: string }
+
+    DashboardOverview:
+      type: object
+      properties:
+        kpis:
+          type: object
+          properties:
+            totalProperties: { type: integer }
+            activeContracts: { type: integer }
+            pendingPayments: { type: number, format: double }
+            tenantRetention: { type: number, format: double }
+        recentActivity:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityItem'
+        occupancy:
+          type: object
+          properties:
+            occupied: { type: integer }
+            vacant: { type: integer }
+            maintenance: { type: integer }
+        monthlyIncomeExpenses:
+          type: array
+          items:
+            type: object
+            properties:
+              month: { type: string }
+              income: { type: number, format: double }
+              expenses: { type: number, format: double }
+
+    OccupancyReport:
+      type: array
+      items:
+        type: object
+        properties:
+          month: { type: string }
+          occupiedRate: { type: number, format: double }
+          vacantRate: { type: number, format: double }
+
+    IncomeExpenseReport:
+      type: array
+      items:
+        type: object
+        properties:
+          month: { type: string }
+          income: { type: number, format: double }
+          expenses: { type: number, format: double }
+
+    PaginatedPropertyResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Property'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    PaginatedContractResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Contract'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    PaginatedTenantResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tenant'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    PaginatedOwnerResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Owner'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+
+    PaginatedPaymentResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Payment'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
