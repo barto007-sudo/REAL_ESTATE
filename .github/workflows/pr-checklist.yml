@@ -25,7 +25,7 @@ jobs:
 
             const missing = [];
             for (const check of requiredChecks) {
-              const checked = new RegExp(`- \\[xX\\] .*${check.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&")}`);
+              const checked = new RegExp(`- \\[[xX]\\] .*${check.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&")}`);
               if (!checked.test(body)) {
                 missing.push(check);
               }
