@@ -63,7 +63,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate OpenAPI schema
-        uses: char0n/swagger-editor-validate@v1
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          definition-file: docs/api/openapi.yaml
+          node-version: 20
+
+      - name: Validate OpenAPI schema
+        run: npx @apidevtools/swagger-cli validate docs/api/openapi.yaml
