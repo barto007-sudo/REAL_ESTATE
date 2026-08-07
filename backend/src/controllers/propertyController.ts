@@ -24,10 +24,10 @@ export const getProperties = async (req: Request, res: Response) => {
     sql += ' ORDER BY createdAt DESC';
 
     const result = await query(sql, params);
-    res.json(result.rows);
+    return res.json(result.rows);
   } catch (error) {
     console.error('Get properties error:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -52,10 +52,10 @@ export const getPropertyById = async (req: Request, res: Response) => {
       [id]
     );
 
-    res.json({ ...property, bids: bidsResult.rows });
+    return res.json({ ...property, bids: bidsResult.rows });
   } catch (error) {
     console.error('Get property error:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -79,10 +79,10 @@ export const createProperty = async (req: Request, res: Response) => {
       [title, description, address, city, state, zipCode, price, auctionStartDate || null, auctionEndDate || null, rentalPrice || null, isAvailableForRent || false, isAvailableForAuction || false, req.user.id]
     );
 
-    res.status(201).json(result.rows[0]);
+    return res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error('Create property error:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -165,10 +165,10 @@ export const updateProperty = async (req: Request, res: Response) => {
     const sql = `UPDATE properties SET ${updates.join(', ')} WHERE id = $${paramCount} RETURNING *`;
     const result = await query(sql, values);
 
-    res.json(result.rows[0]);
+    return res.json(result.rows[0]);
   } catch (error) {
     console.error('Update property error:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -194,9 +194,9 @@ export const deleteProperty = async (req: Request, res: Response) => {
     await query('DELETE FROM rentals WHERE propertyId = $1', [id]);
     await query('DELETE FROM properties WHERE id = $1', [id]);
 
-    res.json({ message: 'Property deleted successfully' });
+    return res.json({ message: 'Property deleted successfully' });
   } catch (error) {
     console.error('Delete property error:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { propertyService } from '../services/api';
 import { Property, User } from '../types';
@@ -12,11 +12,7 @@ function MyPropertiesPage({ user }: MyPropertiesPageProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    fetchMyProperties();
-  }, []);
-
-  const fetchMyProperties = async () => {
+  const fetchMyProperties = useCallback(async () => {
     try {
       setLoading(true);
       const data = await propertyService.getProperties();
@@ -27,7 +23,11 @@ function MyPropertiesPage({ user }: MyPropertiesPageProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user.id]);
+
+  useEffect(() => {
+    fetchMyProperties();
+  }, [fetchMyProperties]);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this property?')) return;

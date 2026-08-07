@@ -44,10 +44,10 @@ export const createRental = async (req: Request, res: Response) => {
       [propertyId, req.user.id, new Date(startDate), new Date(endDate), property.rentalPrice]
     );
 
-    res.status(201).json(result.rows[0]);
+    return res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error('Create rental error:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -64,10 +64,10 @@ export const getRentals = async (req: Request, res: Response) => {
     }
 
     const result = await query(sql, params);
-    res.json(result.rows);
+    return res.json(result.rows);
   } catch (error) {
     console.error('Get rentals error:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -86,10 +86,10 @@ export const getMyRentals = async (req: Request, res: Response) => {
       [req.user.id]
     );
 
-    res.json(result.rows);
+    return res.json(result.rows);
   } catch (error) {
     console.error('Get my rentals error:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -125,9 +125,9 @@ export const updateRentalStatus = async (req: Request, res: Response) => {
       [status, new Date(), id]
     );
 
-    res.json(result.rows[0]);
+    return res.json(result.rows[0]);
   } catch (error) {
     console.error('Update rental status error:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };

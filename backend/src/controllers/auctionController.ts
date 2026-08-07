@@ -48,10 +48,10 @@ export const placeBid = async (req: Request, res: Response) => {
       [propertyId, req.user.id, amount]
     );
 
-    res.status(201).json(result.rows[0]);
+    return res.status(201).json(result.rows[0]);
   } catch (error) {
     console.error('Place bid error:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -68,10 +68,10 @@ export const getBids = async (req: Request, res: Response) => {
       [propertyId]
     );
 
-    res.json(result.rows);
+    return res.json(result.rows);
   } catch (error) {
     console.error('Get bids error:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -90,9 +90,9 @@ export const getMyBids = async (req: Request, res: Response) => {
       [req.user.id]
     );
 
-    res.json(result.rows);
+    return res.json(result.rows);
   } catch (error) {
     console.error('Get my bids error:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };

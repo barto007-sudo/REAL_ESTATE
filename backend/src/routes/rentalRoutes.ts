@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { createRental, getRentals, getMyRentals, updateRentalStatus } from '../controllers/rentalController';
-import { authMiddleware, roleMiddleware } from '../middleware/auth';
+import { authMiddleware } from '../middleware/auth';
 
 const router = Router();
 

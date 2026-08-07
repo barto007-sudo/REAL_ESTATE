@@ -23,10 +23,11 @@ jobs:
               "CI stages pass (install, lint, typecheck, test, build)"
             ];
 
+            const normalizedBody = body.toLowerCase();
             const missing = [];
             for (const check of requiredChecks) {
-              const checked = new RegExp(`- \\[xX\\] .*${check.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&")}`);
-              if (!checked.test(body)) {
+              const expected = `- [x] ${check.toLowerCase()}`;
+              if (!normalizedBody.includes(expected)) {
                 missing.push(check);
               }
             }
