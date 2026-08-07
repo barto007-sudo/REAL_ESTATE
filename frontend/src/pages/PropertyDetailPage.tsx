@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { propertyService, auctionService, rentalService } from '../services/api';
 import { Property, Bid, User } from '../types';
@@ -16,11 +16,7 @@ function PropertyDetailPage({ user }: PropertyDetailPageProps) {
   const [bidAmount, setBidAmount] = useState('');
   const [rental, setRental] = useState({ startDate: '', endDate: '' });
 
-  useEffect(() => {
-    fetchProperty();
-  }, [id]);
-
-  const fetchProperty = async () => {
+  const fetchProperty = useCallback(async () => {
     if (!id) return;
     try {
       setLoading(true);
@@ -31,7 +27,11 @@ function PropertyDetailPage({ user }: PropertyDetailPageProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    fetchProperty();
+  }, [fetchProperty]);
 
   const handlePlaceBid = async (e: React.FormEvent) => {
     e.preventDefault();
