@@ -36,10 +36,10 @@ export const register = async (req: Request, res: Response) => {
       { expiresIn: '24h' }
     );
 
-    res.status(201).json({ user, token });
+    return res.status(201).json({ user, token });
   } catch (error) {
     console.error('Register error:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -73,10 +73,10 @@ export const login = async (req: Request, res: Response) => {
     );
 
     const { password: _, ...userWithoutPassword } = user;
-    res.json({ user: userWithoutPassword, token });
+    return res.json({ user: userWithoutPassword, token });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };
 
@@ -89,9 +89,9 @@ export const getMe = async (req: Request, res: Response) => {
     const result = await query('SELECT id, email, firstName, lastName, role FROM users WHERE id = $1', [req.user.id]);
     const user = result.rows[0];
 
-    res.json(user);
+    return res.json(user);
   } catch (error) {
     console.error('Get me error:', error);
-    res.status(500).json({ message: 'Server error' });
+    return res.status(500).json({ message: 'Server error' });
   }
 };

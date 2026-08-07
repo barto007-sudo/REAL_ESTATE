@@ -29,7 +29,7 @@ app.use('/api/auctions', auctionRoutes);
 app.use('/api/rentals', rentalRoutes);
 
 // Health check
-app.get('/api/health', (req, res) => {
+app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok' });
 });
 
