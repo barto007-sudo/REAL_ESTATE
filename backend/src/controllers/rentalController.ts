@@ -20,13 +20,13 @@ export const createRental = async (req: Request, res: Response) => {
     }
 
     const property = propertyResult.rows[0];
-    if (!property.isAvailableForRent) {
+    if (!property.isavailableforrent) {
       return res.status(400).json({ message: 'Property is not available for rent' });
     }
 
     // Check for overlapping rentals
     const conflictResult = await query(
-      `SELECT * FROM rentals WHERE propertyId = $1 AND status != 'cancelled' AND
+      `SELECT * FROM rentals WHERE propertyid = $1 AND status != 'cancelled' AND
        ((startDate <= $2 AND endDate >= $3) OR
         (startDate <= $3 AND endDate >= $2))`,
       [propertyId, new Date(startDate), new Date(endDate)]
@@ -38,10 +38,10 @@ export const createRental = async (req: Request, res: Response) => {
 
     // Create rental
     const result = await query(
-      `INSERT INTO rentals (propertyId, tenantId, startDate, endDate, monthlyPrice, status)
+      `INSERT INTO rentals (propertyid, tenantid, startdate, enddate, monthlyprice, status)
        VALUES ($1, $2, $3, $4, $5, 'pending')
-       RETURNING *`,
-      [propertyId, req.user.id, new Date(startDate), new Date(endDate), property.rentalPrice]
+       RETURNING id, propertyid AS "propertyId", tenantid AS "tenantId", startdate AS "startDate", enddate AS "endDate", monthlyprice AS "monthlyPrice", status, createdat AS "createdAt", updatedat AS "updatedAt"`,
+      [propertyId, req.user.id, new Date(startDate), new Date(endDate), property.rentalprice]
     );
 
     return res.status(201).json(result.rows[0]);
@@ -55,11 +55,21 @@ export const getRentals = async (req: Request, res: Response) => {
   try {
     const { propertyId } = req.query;
 
-    let sql = 'SELECT * FROM rentals WHERE 1=1';
+    let sql = `SELECT
+      id,
+      propertyid AS "propertyId",
+      tenantid AS "tenantId",
+      startdate AS "startDate",
+      enddate AS "endDate",
+      monthlyprice AS "monthlyPrice",
+      status,
+      createdat AS "createdAt",
+      updatedat AS "updatedAt"
+    FROM rentals WHERE 1=1`;
     const params: any[] = [];
 
     if (propertyId) {
-      sql += ' AND propertyId = $' + (params.length + 1);
+      sql += ' AND propertyid = $' + (params.length + 1);
       params.push(propertyId);
     }
 
@@ -78,11 +88,23 @@ export const getMyRentals = async (req: Request, res: Response) => {
     }
 
     const result = await query(
-      `SELECT r.*, p.title, p.city, p.address 
+      `SELECT
+        r.id,
+        r.propertyid AS "propertyId",
+        r.tenantid AS "tenantId",
+        r.startdate AS "startDate",
+        r.enddate AS "endDate",
+        r.monthlyprice AS "monthlyPrice",
+        r.status,
+        r.createdat AS "createdAt",
+        r.updatedat AS "updatedAt",
+        p.title,
+        p.city,
+        p.address
        FROM rentals r 
-       JOIN properties p ON r.propertyId = p.id 
-       WHERE r.tenantId = $1 
-       ORDER BY r.createdAt DESC`,
+       JOIN properties p ON r.propertyid = p.id 
+       WHERE r.tenantid = $1 
+       ORDER BY r.createdat DESC`,
       [req.user.id]
     );
 
@@ -108,7 +130,7 @@ export const updateRentalStatus = async (req: Request, res: Response) => {
 
     // Check if user is the property owner or admin
     const rentalResult = await query(
-      'SELECT r.*, p.ownerId FROM rentals r JOIN properties p ON r.propertyId = p.id WHERE r.id = $1',
+      'SELECT r.id, p.ownerid FROM rentals r JOIN properties p ON r.propertyid = p.id WHERE r.id = $1',
       [id]
     );
 
@@ -116,12 +138,12 @@ export const updateRentalStatus = async (req: Request, res: Response) => {
       return res.status(404).json({ message: 'Rental not found' });
     }
 
-    if (rentalResult.rows[0].ownerId !== req.user.id && req.user.role !== 'admin') {
+    if (rentalResult.rows[0].ownerid !== req.user.id && req.user.role !== 'admin') {
       return res.status(403).json({ message: 'You do not have permission to update this rental' });
     }
 
     const result = await query(
-      'UPDATE rentals SET status = $1, updatedAt = $2 WHERE id = $3 RETURNING *',
+      'UPDATE rentals SET status = $1, updatedat = $2 WHERE id = $3 RETURNING id, propertyid AS "propertyId", tenantid AS "tenantId", startdate AS "startDate", enddate AS "endDate", monthlyprice AS "monthlyPrice", status, createdat AS "createdAt", updatedat AS "updatedAt"',
       [status, new Date(), id]
     );
 

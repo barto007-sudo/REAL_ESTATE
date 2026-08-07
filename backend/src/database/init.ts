@@ -2,6 +2,9 @@ import { query } from './db';
 
 export const initializeDatabase = async () => {
   try {
+    // Ensure UUID generator exists for table defaults.
+    await query('CREATE EXTENSION IF NOT EXISTS pgcrypto;');
+
     // Create users table
     await query(`
       CREATE TABLE IF NOT EXISTS users (

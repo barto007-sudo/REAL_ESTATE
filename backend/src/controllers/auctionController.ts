@@ -20,13 +20,13 @@ export const placeBid = async (req: Request, res: Response) => {
     }
 
     const property = propertyResult.rows[0];
-    if (!property.isAvailableForAuction) {
+    if (!property.isavailableforauction) {
       return res.status(400).json({ message: 'Property is not available for auction' });
     }
 
     // Check if auction is still active
     const now = new Date();
-    if (now > property.auctionEndDate) {
+    if (now > property.auctionenddate) {
       return res.status(400).json({ message: 'Auction has ended' });
     }
 
@@ -48,7 +48,11 @@ export const placeBid = async (req: Request, res: Response) => {
       [propertyId, req.user.id, amount]
     );
 
-    return res.status(201).json(result.rows[0]);
+    return res.status(201).json({
+      id: result.rows[0].id,
+      amount: result.rows[0].amount,
+      createdAt: result.rows[0].createdat,
+    });
   } catch (error) {
     console.error('Place bid error:', error);
     return res.status(500).json({ message: 'Server error' });
@@ -60,10 +64,10 @@ export const getBids = async (req: Request, res: Response) => {
     const { propertyId } = req.params;
 
     const result = await query(
-      `SELECT b.id, b.amount, u.firstName, u.lastName, b.createdAt 
+      `SELECT b.id, b.amount, u.firstname AS "firstName", u.lastname AS "lastName", b.createdat AS "createdAt" 
        FROM bids b 
-       JOIN users u ON b.bidderId = u.id 
-       WHERE b.propertyId = $1 
+       JOIN users u ON b.bidderid = u.id 
+       WHERE b.propertyid = $1 
        ORDER BY b.amount DESC`,
       [propertyId]
     );
@@ -82,11 +86,11 @@ export const getMyBids = async (req: Request, res: Response) => {
     }
 
     const result = await query(
-      `SELECT b.id, b.amount, p.title, p.city, b.createdAt 
+      `SELECT b.id, b.amount, p.title, p.city, b.createdat AS "createdAt" 
        FROM bids b 
-       JOIN properties p ON b.propertyId = p.id 
-       WHERE b.bidderId = $1 
-       ORDER BY b.createdAt DESC`,
+       JOIN properties p ON b.propertyid = p.id 
+       WHERE b.bidderid = $1 
+       ORDER BY b.createdat DESC`,
       [req.user.id]
     );
 
